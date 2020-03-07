@@ -1,0 +1,19 @@
+language: dart
+
+dart:
+  - 2.4.0
+  - dev
+
+dart_task:
+  - test: -p vm
+    xvfb: false
+  - test: -p firefox
+  - dartanalyzer: --fatal-warnings --fatal-infos .
+
+branches:
+  only: [master]
+
+cache:
+  directories:
+    - $HOME/.pub-cache
+  
