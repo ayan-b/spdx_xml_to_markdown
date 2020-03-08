@@ -49,7 +49,6 @@ XmlElement parser(String xmlString, XmlElement root) {
     } else if (xmlString.indexOf(r'</') == 0) {
       --foundStartTagCount;
       var endTag = RegExp(r'^</([\s\S]*?)>').stringMatch(xmlString);
-      // print(endTag);
       var endTagLength = endTag.length;
       xmlString = advance(xmlString, endTag);
       endTag = endTag.substring(2, endTagLength - 1);
@@ -70,7 +69,6 @@ XmlElement parser(String xmlString, XmlElement root) {
       if (startTag != null && startTag.isNotEmpty) {
         if (startTag == '<bullet>') {
           var data = RegExp(r'>([\s\S]*?)</').stringMatch(xmlString);
-          // print(data);
           data = data.substring(1, data.length - 2);
           currentXmlElement.setData(data + ' ');
           xmlString = advance(xmlString, startTag + data + '</button>');
