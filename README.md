@@ -48,6 +48,11 @@ void main() {
 
 See [`example`](./example/README.md) for more usage.
 
+## Assumptions
+
+- `alt`s are not printed.
+- `optional`s are not printed.
+
 ## LICENSE
 
 [BSD 3-Clause](./LICENSE)
