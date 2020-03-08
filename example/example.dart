@@ -1,7 +1,7 @@
 import 'package:spdx_xml_to_markdown/spdx_xml_to_markdown.dart';
 
 void main() {
-  var xmlString = """
+  var xmlString = '''
 <?xml version="1.0" encoding="UTF-8"?>
 <SPDXLicenseCollection xmlns="http://www.spdx.org/license">
    <license isOsiApproved="true" licenseId="MIT" name="MIT License">
@@ -34,6 +34,6 @@ void main() {
     </text>
   </license>
 </SPDXLicenseCollection>
-  """;
+  ''';
   print(parse(xmlString));
 }

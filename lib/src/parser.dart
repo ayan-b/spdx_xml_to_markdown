@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'xml_element.dart';
 
 Map<String, dynamic> getAttributes(String startTag) {
