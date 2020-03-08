@@ -14,13 +14,6 @@ Map<String, dynamic> getAttributes(String startTag) {
   return attributesMap;
 }
 
-dynamic readFile(String uri) {
-  var xmlString = File(uri).readAsStringSync();
-  // trim new line or white space at the end
-  xmlString = xmlString.trim();
-  return xmlString;
-}
-
 String removeExtraSpaces(String data) {
   return data.replaceAll(RegExp(r'([\n][\s]*)+'), '\n');
 }
@@ -31,18 +24,25 @@ String advance(String content, String consume) {
   return content;
 }
 
+String removeFirstLine(String xmlString) {
+  var firstNewLineCharacter = xmlString.indexOf('\n');
+  return xmlString.substring(firstNewLineCharacter + 1);
+}
+
 XmlElement parser(String xmlString, XmlElement root) {
+   // trim new line or white space at the end
+  xmlString = xmlString.trim();
+  // remove first line
+  xmlString = removeFirstLine(xmlString);
   var foundStartTagCount = 0;
   var stack = <String>[];
   var prevXmlElement;
   var currentXmlElement = root;
-  // prevXmlElement.children.add(currentXmlElement);
   while (xmlString.isNotEmpty) {
     // XML empty-element tag
     // See https://www.w3.org/TR/xml/#sec-starttags
     if (xmlString.indexOf(RegExp(r'<([s\S]*?)/>')) == 0) {
       var emptyElementTag = RegExp(r'<([s\S]*?)/>').stringMatch(xmlString);
-      // print(emptyElementTag);
       currentXmlElement.setData(emptyElementTag);
       xmlString = advance(xmlString, emptyElementTag);
     // parse end tag
@@ -53,8 +53,8 @@ XmlElement parser(String xmlString, XmlElement root) {
       var endTagLength = endTag.length;
       xmlString = advance(xmlString, endTag);
       endTag = endTag.substring(2, endTagLength - 1);
-      // parse 
       var startTag = stack[stack.length - 1];
+      assert (startTag == endTag);
       // pop from stack
       stack = stack.sublist(0, stack.length - 1);
       // push currentXmlElement it to parent's children list
@@ -68,6 +68,14 @@ XmlElement parser(String xmlString, XmlElement root) {
       ++foundStartTagCount;
       var startTag = RegExp(r'^<([\s\S]*?)>').stringMatch(xmlString);
       if (startTag != null && startTag.isNotEmpty) {
+        if (startTag == '<bullet>') {
+          var data = RegExp(r'>([\s\S]*?)</').stringMatch(xmlString);
+          // print(data);
+          data = data.substring(1, data.length - 2);
+          currentXmlElement.setData(data + ' ');
+          xmlString = advance(xmlString, startTag + data + '</button>');
+          continue;
+        }
         var startTagLength = startTag.length;
         xmlString = advance(xmlString, startTag);
         startTag = startTag.substring(1, startTagLength - 1);
@@ -79,28 +87,21 @@ XmlElement parser(String xmlString, XmlElement root) {
         currentXmlElement.tag = startTag;
         currentXmlElement.parent = prevXmlElement;
       }
-      // print(startTag);
+      // parse data
     } else if (foundStartTagCount > 0) {
-      // data
       var data = RegExp(r'([\s\S]*?)<').stringMatch(xmlString);
       if (data != null) {
         data = data.substring(0, data.length - 1);
         var dataLength = data.length;
         xmlString = xmlString.substring(dataLength);
         data = removeExtraSpaces(data);
-        // print(data);
         currentXmlElement.setData(data.trim());
       }
     } else {
       // spaces and new lines between an ending tag and a start tag
-      // TODO: Use Regex
-      var i = 0;
-      while (i < xmlString.length && xmlString[i] != '<') {
-        ++i;
-      }
-      xmlString = xmlString.substring(i);
+      var extraSpaces = RegExp(r'([\s\S]*?)<').stringMatch(xmlString);
+      xmlString = xmlString.substring(extraSpaces.length - 1);
     }
   }
-  // root.children.add(currentXmlElement);
   return root;
 }
