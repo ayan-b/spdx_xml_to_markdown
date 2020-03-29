@@ -1,8 +1,8 @@
 name: spdx_xml_to_markdown
 version: 0.0.1
 
-description: Convert a spdx-xml License into markdown.
-homepage: https://github.com/ayan-b/spdx_xml_to_markdown
+description: A package to convert a SPDX XML License source files into markdown.
+homepage: https://ayan-b.github.io/spdx_xml_to_markdown/
 
 environment:
   sdk: ">=2.4.0 <3.0.0"
